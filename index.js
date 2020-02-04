@@ -1,5 +1,5 @@
-const cheerio = require("cheerio");
-const cloudscraper = require("cloudscraper");
+const fetchCharacter = require("./src/tibia_api/fetchCharacter");
+const fetchPlayers = require("./src/tibia_api/fetchPlayers");
 const Discord = require("discord.js");
 const client = new Discord.Client();
 
@@ -7,43 +7,9 @@ client.once("ready", () => {
   console.log("Ready!");
 });
 
-const fetchPlayers = async world => {
-  const characters = [];
-  try {
-    const r = await cloudscraper.get(
-      "https://www.tibia.com/community/?subtopic=worlds&world=Celebra"
-    );
-    const $ = cheerio.load(r);
-    $("tbody")["5"].children.forEach((tr, index) => {
-      if (index === 0) return;
-      if (tr.type !== "tag") return;
-      const className = tr.attribs.class;
-      if (className !== "Odd" && className !== "Even") return;
-      const linkTag = tr.children[0].children[0];
-      const nameTag =
-        linkTag.attribs.name === undefined ? linkTag : linkTag.next;
-      const name = nameTag.children[0].data;
-      const url = nameTag.attribs.href;
-      const level = parseInt(tr.children[1].children[0].data, 10);
-      const vocation = tr.children[2].children[0].data;
-      const character = {
-        name,
-        url,
-        level,
-        vocation
-      };
-      characters.push(character);
-    });
-  } catch (e) {
-    console.error(e);
-    return null;
-  }
-  return characters;
-};
-
 client.on("message", async message => {
   if (message.content === "!online") {
-    const characters = await fetchPlayers();
+    const characters = await fetchPlayers('Celebra');
     const resp = characters.map(char => {
       return [
         `Nome: ${char.name}`.padEnd(35, " "),
@@ -51,11 +17,20 @@ client.on("message", async message => {
         `Vocação: ${char.vocation}`
       ].join("  |  ");
     });
-    console.log(resp.length);
+    message.channel.send(resp, { split: true });
+  } else if (message.content.startsWith('!add')) {
+    const charName = message.content.replace('!add ', '');
+    const char = await fetchCharacter(charName);
+    const resp = [
+      `Nome: ${char.name}`,
+      `Level: ${char.level}`,
+      `Vocação: ${char.vocation}`,
+      `Mundo: ${char.world}`,
+    ].join("\n");
     message.channel.send(resp, { split: true });
   }
 });
 
 client
-  .login("NjU2OTU1NDA5NjU5MDY4NDY0.XfqLjg.7ybjoNRRwry0sOdW3qAAHF2g1Hk")
+  .login("NjU2OTU1NDA5NjU5MDY4NDY0.XjhvDA.UhJMBBjjUmAOfTpE86sSun-9jDI")
   .catch(e => console.error(e));
