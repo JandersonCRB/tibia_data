@@ -4,11 +4,6 @@ const fetchGuild = require("./src/tibia_api/fetchGuild");
 // const Discord = require("discord.js");
 // const client = new Discord.Client();
 
-fetchGuild("Uzbrabo").then(p => {
-  const HL = p.filter(c => c.level > 200);
-  console.log(HL)
-});
-
 module.exports = { fetchPlayers, fetchGuild, fetchCharacter };
 //
 // const COMMAND_SYMBOL = "!";
