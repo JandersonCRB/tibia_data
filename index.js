@@ -32,5 +32,5 @@ client.on("message", async message => {
 });
 
 client
-  .login("NjU2OTU1NDA5NjU5MDY4NDY0.XjhvDA.UhJMBBjjUmAOfTpE86sSun-9jDI")
+  .login("NjU2OTU1NDA5NjU5MDY4NDY0.XjjHSQ.jkz1Ahm8foKe-ZS7bhMvAaNt4nE")
   .catch(e => console.error(e));

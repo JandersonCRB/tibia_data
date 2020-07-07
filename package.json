@@ -5,17 +5,20 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "api": "node -r esm api.js ",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.19.0",
+    "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.3",
     "cloudscraper": "^4.5.0",
     "discord.js": "^11.5.1",
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-prettier": "^3.1.2",
+    "esm": "^3.2.25",
     "express": "^4.17.1",
     "node-html-parser": "^1.1.16",
     "prettier": "^1.19.1",
