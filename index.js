@@ -3,13 +3,16 @@ const fetchPlayers = require("./src/tibia_api/fetchPlayers");
 const Discord = require("discord.js");
 const client = new Discord.Client();
 
+const COMMAND_SYMBOL = "!";
+
 client.once("ready", () => {
   console.log("Ready!");
 });
 
-client.on("message", async message => {
-  if (message.content === "!online") {
-    const characters = await fetchPlayers('Celebra');
+const commands = {
+  online: async (message, args) => {
+    const [world] = args;
+    const characters = await fetchPlayers(world);
     const resp = characters.map(char => {
       return [
         `Nome: ${char.name}`.padEnd(35, " "),
@@ -18,19 +21,36 @@ client.on("message", async message => {
       ].join("  |  ");
     });
     message.channel.send(resp, { split: true });
-  } else if (message.content.startsWith('!add')) {
-    const charName = message.content.replace('!add ', '');
+  },
+  add: async (message, args) => {
+    const charName = args.join(' ');
     const char = await fetchCharacter(charName);
     const resp = [
       `Nome: ${char.name}`,
       `Level: ${char.level}`,
       `Vocação: ${char.vocation}`,
-      `Mundo: ${char.world}`,
+      `Mundo: ${char.world}`
     ].join("\n");
     message.channel.send(resp, { split: true });
+  },
+  default: (message, args) => {
+    message.channel.send("Comando não encontrado");
   }
-});
+};
 
-client
-  .login("NjU2OTU1NDA5NjU5MDY4NDY0.XjjHSQ.jkz1Ahm8foKe-ZS7bhMvAaNt4nE")
-  .catch(e => console.error(e));
+const processMessage = message => {
+  let { content } = message;
+  if (content.startsWith(COMMAND_SYMBOL)) {
+    content = content.replace(COMMAND_SYMBOL, "");
+    const [command, ...args] = content.split(" ");
+    if (Object.keys(commands).includes(command)) {
+      commands[command](message, args);
+    } else {
+      commands["default"](message);
+    }
+  }
+};
+
+client.on("message", processMessage);
+
+client.login(process.env.DISCORD_TOKEN).catch(e => console.error(e));
