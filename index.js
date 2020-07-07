@@ -9,7 +9,7 @@ fetchGuild("Uzbrabo").then(p => {
   console.log(HL)
 });
 
-export {}
+export { fetchPlayers, fetchGuild, fetchCharacter };
 //
 // const COMMAND_SYMBOL = "!";
 //
